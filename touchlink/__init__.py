@@ -3,8 +3,10 @@ from configparser import ConfigParser
 import os
 from tinydb import TinyDB
 import pyromod.listen  # noqa
+from plate import Plate
 
 database = TinyDB('touchlink.json')
+loc = Plate()
 
 config = ConfigParser()
 config.read('config.ini')
