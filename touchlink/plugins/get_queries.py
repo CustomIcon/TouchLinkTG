@@ -5,11 +5,11 @@ from tinydb import Query
 from pyrogram import emoji
 from aiohttp import ClientSession
 from attrify import Attrify
-from touchlink.utils import card
+from touchlink import utils
 
 
 @Client.on_callback_query(filters.regex('^get_*'))
-async def _(_, query):  # sourcery skip: remove-redundant-fstring
+async def _(_, query):
     User = Query()
     data = query.data.split('_')
     if data[1] == 'started':
@@ -40,10 +40,11 @@ async def _(_, query):  # sourcery skip: remove-redundant-fstring
                     ]
                 )
             )
-        data = await card.get_card_balance(user[0]['card'])
+        data = await utils.get_card_balance(user[0]['card'])
         if data.success:
             return await query.answer(loc('check_balance', user[0]['locale']) + str(data.data.Balance), show_alert=True)
     elif data[1] == 'agency':
+        user = database.search(User.user_id == query.from_user.id)
         async with ClientSession() as ses:
             async with ses.get(
                 "https://bus-transportlink.mtcc.mv/api/agents"
@@ -58,8 +59,14 @@ async def _(_, query):  # sourcery skip: remove-redundant-fstring
                 else:
                     string += f"{emoji.BUS_STOP} {agency.name}\n"
                 string += f"island: __{agency.island}__\n\n"
-            return await query.message.edit_text(string, disable_web_page_preview=True, reply_markup=types.InlineKeyboardMarkup([[types.InlineKeyboardButton('Back', callback_data='get_started')]]))
+            return await query.message.edit_text(string, disable_web_page_preview=True, reply_markup=types.InlineKeyboardMarkup([[types.InlineKeyboardButton(loc('back', user[0]['locale']), callback_data='get_started')]]))
     elif data[1] == 'stop':
-        #TODO
-        return await query.message.edit_text('none')
-    
+        user = database.search(User.user_id == query.from_user.id)
+        buttons = []
+        for stop in (await utils.get_stops()).data:
+            try:
+                buttons.append([types.InlineKeyboardButton(f"{stop.name} ({stop.zone})", callback_data=f'stop_{stop._id}')])
+            except AttributeError:
+                buttons.append([types.InlineKeyboardButton(f"{stop.name}", callback_data=f'stop_{stop._id}')])
+        buttons.append([types.InlineKeyboardButton(loc('back', user[0]['locale']), callback_data='get_started')])
+        return await query.message.edit_text(loc('get_stops', user[0]['locale']), reply_markup=types.InlineKeyboardMarkup(buttons))

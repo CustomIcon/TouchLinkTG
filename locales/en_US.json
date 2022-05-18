@@ -1,0 +1,15 @@
+{
+    "get_started":"What would you like me to do?",
+    "get_started_button":"Get Started",
+    "get_balance": ":MONEY_BAG: Check Balance",
+    "get_agency": ":WOMAN_FACTORY_WORKER: Find Card Agency",
+    "get_stop": ":BUS_STOP: Find a Bus Stop",
+    "set_language": ":FLAG_MALDIVES: Change Language",
+    "no_card": "You don't have any Bus cards added yet.\nFeel free to add one by pressing the button below.",
+    "set_card": ":CREDIT_CARD: Add Card",
+    "check_balance": ":CREDIT_CARD: Your balance is: ",
+    "back": ":LEFT_ARROW: Back",
+    "get_stops": "Here are bus stops available around Male/Hulumale:",
+    "send_card": "Send me the card number (located on top right corner of the card)",
+    "card_has_set": ":CREDIT_CARD: Your card has been set to "
+}
