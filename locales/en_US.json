@@ -11,5 +11,8 @@
     "back": ":LEFT_ARROW: Back",
     "get_stops": "Here are bus stops available around Male/Hulumale:",
     "send_card": "Send me the card number (located on top right corner of the card)",
-    "card_has_set": ":CREDIT_CARD: Your card has been set to "
+    "card_has_set": ":CREDIT_CARD: Your card has been set to ",
+
+    "card_number":"\nCard No.: ",
+    "set_remove": ":CROSS_MARK: Remove Card"
 }

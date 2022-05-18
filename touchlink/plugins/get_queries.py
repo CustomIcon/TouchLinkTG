@@ -42,7 +42,16 @@ async def _(_, query):
             )
         data = await utils.get_card_balance(user[0]['card'])
         if data.success:
-            return await query.answer(loc('check_balance', user[0]['locale']) + str(data.data.Balance), show_alert=True)
+            return await query.message.edit(
+                loc('check_balance', user[0]['locale']) + f"`{data.data.Balance}MVR`" +
+                loc('card_number', user[0]['locale']) + user[0]['card'],
+                reply_markup=types.InlineKeyboardMarkup(
+                    [
+                        [types.InlineKeyboardButton(loc('back', user[0]['locale']), callback_data='get_started')],
+                        [types.InlineKeyboardButton(loc('set_remove', user[0]['locale']), callback_data='set_remove')],
+                    ]
+                )
+            )
     elif data[1] == 'agency':
         user = database.search(User.user_id == query.from_user.id)
         async with ClientSession() as ses:

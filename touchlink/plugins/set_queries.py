@@ -12,6 +12,8 @@ async def _(_, query):
     if data[1] == "card":
         await query.message.delete()
         question = await query.from_user.ask(loc('send_card', user[0]['locale']), reply_markup=types.ForceReply())
+        if question.text is None:
+            return await query.message.reply("Invalid Card")
         data = await utils.card.get_card_balance(question.text.replace(')', '').replace('(', ''))
         if data.success:
             database.update({'card': data.data.CardCan}, User.user_id == query.from_user.id)
@@ -20,7 +22,25 @@ async def _(_, query):
     elif data[1] == "language":
         locale = user[0]['locale']
         database.update({'locale': 'div_MV' if locale == 'en_US' else 'en_US'}, User.user_id == query.from_user.id)
-        await  query.message.delete()
+        await query.message.delete()
+        return await query.message.reply(
+            loc('get_started', user[0]['locale']),
+            reply_markup=types.InlineKeyboardMarkup(
+                [
+                    [types.InlineKeyboardButton(loc('get_balance', user[0]['locale']), callback_data='get_balance')],
+                    [types.InlineKeyboardButton(loc('get_agency', user[0]['locale']), callback_data='get_agency')],
+                    [types.InlineKeyboardButton(loc('get_stop', user[0]['locale']), callback_data='get_stop')],
+                    [types.InlineKeyboardButton(
+                        loc('set_language', user[0]['locale']),
+                        callback_data='set_language'
+                    )],
+                ]
+            )
+        )
+    elif data[1] == "remove":
+        database.update({'card': '0'}, User.user_id == query.from_user.id)
+        await query.message.delete()
+        await query.answer("Card has been removed from this account", show_alert=True)
         return await query.message.reply(
             loc('get_started', user[0]['locale']),
             reply_markup=types.InlineKeyboardMarkup(
