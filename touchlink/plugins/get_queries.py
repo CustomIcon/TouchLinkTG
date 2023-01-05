@@ -1,15 +1,17 @@
 from subprocess import call
 from pyrogram import Client, filters, types
-from touchlink import database, loc
+from touchlink import database, loc, config
 from tinydb import Query
 from pyrogram import emoji
 from aiohttp import ClientSession
 from attrify import Attrify
 from touchlink import utils
+import ujson as json
+
 
 
 @Client.on_callback_query(filters.regex('^get_*'))
-async def _(_, query):
+async def _(_, query):  # sourcery skip: low-code-quality
     User = Query()
     data = query.data.split('_')
     if data[1] == 'started':
@@ -54,11 +56,12 @@ async def _(_, query):
             )
     elif data[1] == 'agency':
         user = database.search(User.user_id == query.from_user.id)
-        async with ClientSession() as ses:
-            async with ses.get(
-                "https://bus-transportlink.mtcc.mv/api/agents"
+        async with ClientSession(headers={'content-type': "application/json",'x-rapidapi-host': config.get('bypass', 'host'),'x-rapidapi-key': config.get('bypass', 'api_key')}) as ses:
+            async with ses.post(
+                config.get('bypass', 'url'),
+                data="{\"url\": \"https://bus-transportlink.mtcc.mv/api/agents\"}"
             ) as resp:
-                data = await resp.json()
+                data = json.loads((await resp.json())["body"])
         data = Attrify(data)
         if data.success:
             string = ''
